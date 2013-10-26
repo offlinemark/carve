@@ -51,6 +51,47 @@ def dir_scrape():
                         # print
                         # print
 
+def cal_carve():
+    """Asssumes it is currently in the output directory (carvings). Finds /Calendar and performs analysis of db."""
+    
+    os.chdir('Calendar')
+    cal_content = []
+    start_ts = ''
+    end_ts = ''
+
+    # indexes
+    id = 0
+    summary = 1
+    location = 2
+    description = 3
+    start_date = 4
+    loc = 5
+    end_date = 6
+
+    for file in os.listdir('.'):
+        conn = sql.connect(file)
+        c = conn.cursor()
+
+        c.execute('SELECT * from Event')
+        cal_content = c.fetchall()
+
+        with open(file.split('.')[0] + "_summary.txt", 'w') as f:
+            for row in cal_content:
+                start_ts = str(datetime.datetime.fromtimestamp(row[4]))
+                end_ts = str(datetime.datetime.fromtimestamp(row[6]))
+
+                f.write('Event ' + str(row[id]) + ':\n\n')
+                f.write('Summary: ' + row[summary] + '\n')
+                f.write('Description: ' + str(row[description]) + '\n')
+                f.write('Location: ' + row[loc] + '\n')
+                f.write('Start: ' + start_ts + '\n')
+                f.write('End: ' + end_ts + '\n')
+
+        conn.close()
+
+    os.chdir(root_output_dir)
+
+
 def sms_carve():
     """Asssumes it is currently in the output directory (carvings). Finds /SMS and performs analysis of db."""
 
@@ -70,13 +111,11 @@ def sms_carve():
         conn = sql.connect(file)
         c = conn.cursor()
 
-        print file
         c.execute('SELECT * from message')
         sms_contents = c.fetchall()
 
         with open(file.split('.')[0] + "_summary.txt", 'w') as f:
             for row in sms_contents:
-                print row[recipient]
 
                 if row[phone_number] == None:
                     destination = str(row[recipient])
@@ -105,6 +144,7 @@ def main():
     os.chdir(root_output_dir)
 
     sms_carve()
+    cal_carve()
 
 if __name__ == '__main__':
     main()

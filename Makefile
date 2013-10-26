@@ -5,7 +5,7 @@ all:
 
 test:
 	find carvings/SMS
-	cat carvings/sms/sms_summary.txt
+	cat carvings/Calendar/Calendar_summary.txt
 
 run:
 	./carve.py
