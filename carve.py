@@ -65,9 +65,8 @@ def mail_pre_carve(output_dir):
     # how fucking scary does this look
     # not actually that bad ;)
 
-
     for item in os.listdir('.'):
-        if item[-5:] == 'Index':
+        if 'Protected' in item:
             shutil.copy(item, output_dir)
             continue
         if item[0:4] == 'IMAP':
@@ -159,6 +158,50 @@ def sms_carve():
 
     os.chdir(root_output_dir)
 
+def mail_carve():
+    """Asssumes it is currently in the output directory (carvings). Finds /Mail and performs analysis of messages and db."""
+
+    os.chdir('Mail')
+    os.mkdir('Messages')
+
+    # indexes
+    sender = 1
+    email = 3
+
+    mail_summary = open('mail_summary.txt', 'w')
+    mail_contents = ''
+    recent_correspondents = []
+
+    for file in os.listdir('.'):
+        try:
+            if file.split('.')[2] == 'emlxpart':
+                shutil.move(file, 'Messages')
+        except:
+            pass # for the files without extensions
+
+        if 'Protected' in file:
+            conn = sql.connect(file)
+            c = conn.cursor()
+            c.execute('SELECT * from messages')
+            mail_contents = c.fetchall()
+            email_addr = mail_contents[0][email]
+            mail_summary.write('Email Address: ' + email_addr + '\n\n')
+            for row in mail_contents:
+                if row[sender] in recent_correspondents:
+                    continue
+                else:
+                    recent_correspondents.append(row[sender])
+            mail_summary.write('Recent Correspondents:\n')
+            for r in recent_correspondents:
+                mail_summary.write(r + '\n')
+
+            conn.close()
+
+    mail_summary.close()
+    os.chdir(root_output_dir)
+
+
+
 ### main ##########
 
 def main():
@@ -171,6 +214,7 @@ def main():
 
     sms_carve()
     cal_carve()
+    mail_carve()
 
 if __name__ == '__main__':
     main()

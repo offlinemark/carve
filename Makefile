@@ -5,6 +5,7 @@ all:
 
 test:
 	ls carvings/Mail
+	cat carvings/Mail/mail_summary.txt
 
 run:
 	./carve.py
