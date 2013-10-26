@@ -11,7 +11,7 @@ import sys
 # configs
 root_dir = '/Users/mark/code/sec/forensics/ciphertech/iOS4_logical_acquisition/'
 root_output_dir = '/Users/mark/code/sec/forensics/ciphertech/carvings/'
-targets = ['Address Book', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail']
+targets = ['AddressBook', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail']
 
 ### functions ##########
 
@@ -34,6 +34,16 @@ def dir_scrape():
                     os.chdir(root + '/Mail')
                     mail_pre_carve(output_dir)
                     os.chdir(root_dir)
+                    continue
+
+                if d == 'Cookies':
+                    output_dir = root_output_dir + d
+                    try:
+                        os.mkdir(output_dir)
+                    except:
+                        pass
+                    for f in os.listdir(root + "/" + d):
+                        shutil.copy(root + '/' + d + '/' + f, output_dir)
                     continue
 
                 # print d

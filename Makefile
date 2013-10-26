@@ -4,8 +4,7 @@ all:
 	make test
 
 test:
-	ls carvings/Mail
-	cat carvings/Mail/mail_summary.txt
+	ls carvings/Cookies
 
 run:
 	./carve.py
