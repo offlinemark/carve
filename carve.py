@@ -27,6 +27,15 @@ def dir_scrape():
         for d in dirs:
             if d in targets:
 
+                # the Mail directory setup is weird, so special case
+                if d == 'Mail':
+                    output_dir = root_output_dir + d
+                    os.mkdir(output_dir)
+                    os.chdir(root + '/Mail')
+                    mail_pre_carve(output_dir)
+                    os.chdir(root_dir)
+                    continue
+
                 # print d
                 # print dirs
                 # print root
@@ -51,6 +60,22 @@ def dir_scrape():
                         # print root + "/" + d + "/" + f + "   =>  " + output_dir
                         # print
                         # print
+
+def mail_pre_carve(output_dir):
+    # how fucking scary does this look
+    # not actually that bad ;)
+
+
+    for item in os.listdir('.'):
+        if item[-5:] == 'Index':
+            shutil.copy(item, output_dir)
+            continue
+        if item[0:4] == 'IMAP':
+            for root, dirs, files in os.walk(item):
+                if 'Messages' in root:
+                    for f in files:
+                        shutil.copy(root + '/' + f, output_dir)
+    pass
 
 def cal_carve():
     """Asssumes it is currently in the output directory (carvings). Finds /Calendar and performs analysis of db."""
