@@ -316,6 +316,38 @@ def keyboard_carve():
         os.rename(f, 'keyboard_data.txt')
     os.chdir(root_output_dir)
 
+def safari_carve():
+    os.chdir('Safari')
+
+    # indexes
+    id = 0
+    title = 4
+    url = 5
+
+    bookmark_contents = []
+
+    for item in os.listdir('.'):
+        conn = sql.connect(item)
+        c = conn.cursor()
+        try:
+            c.execute('SELECT * from bookmarks')
+        except:
+            continue
+        bookmark_contents = c.fetchall()
+
+        with open('safari_bookmarks_summary.txt', 'w') as f:
+            for row in bookmark_contents:
+                f.write('Bookmark ' + str(row[id]) + '\n\n')
+                f.write('Title: ' + row[title] + '\n')
+                f.write('Url: ' + str(row[url]) + '\n')
+                f.write('\n') 
+
+
+
+        conn.close()
+
+    os.chdir(root_output_dir) 
+
 ### main ##########
 
 def main():
@@ -333,6 +365,7 @@ def main():
     addbook_carve()
     maps_carve()
     keyboard_carve()
+    safari_carve()
 
 
 if __name__ == '__main__':

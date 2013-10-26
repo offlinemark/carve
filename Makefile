@@ -4,7 +4,8 @@ all:
 	make test
 
 test:
-	ls carvings
+	ls carvings/Safari
+	cat carvings/Safari/safari_bookmarks_summary.txt
 
 run:
 	./carve.py
