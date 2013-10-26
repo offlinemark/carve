@@ -76,7 +76,7 @@ def dir_scrape():
                     cmd_obj = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
                     cmd_output = cmd_obj.communicate()[0]
                     # print cmd_output
-                    if ('SQLite' in cmd_output) or ('Apple binary' in cmd_output) or ('XML' in cmd_output):
+                    if ('SQLite' in cmd_output) or ('Apple binary' in cmd_output) or ('XML' in cmd_output) or ('Adapt' in cmd_output):
                         # print cmd_output
                         shutil.copy(root + "/" + d + "/" + f, output_dir) 
                         # print root + "/" + d + "/" + f + "   =>  " + output_dir
@@ -373,6 +373,45 @@ def safari_carve():
 
     os.chdir(root_output_dir) 
 
+def voicemail_carve():
+    os.chdir('Voicemail')
+
+    # indexes
+    id = 0
+    date = 2
+    sender = 4
+    callback = 5
+    duration = 6
+    expiration = 7
+
+    date_ts = ''
+    exp_ts = ''
+
+    v_contents = []
+    for item in os.listdir('.'):
+        if 'db' in item:
+            conn = sql.connect(item)
+            c = conn.cursor()
+            c.execute('SELECT * from voicemail')
+            v_contents = c.fetchall()
+
+            with open('voicemail_summary.txt', 'w') as f:
+                f.write('Voicemail:\n\n')
+
+                for row in v_contents:
+                    date_ts = str(datetime.datetime.fromtimestamp(row[date]))
+                    exp_ts = str(datetime.datetime.fromtimestamp(row[expiration]))
+                    f.write('Call ' + str(row[id]) + '\n\n')
+                    f.write('Date: ' + date_ts + '\n')
+                    f.write('Sender: ' + str(row[sender]) + '\n')
+                    f.write('Callback: ' + str(row[callback]) + '\n')
+                    f.write('Expiration: ' + exp_ts + '\n')
+                    f.write('\n')
+
+            conn.close()
+
+    os.chdir(root_output_dir)
+
 ### main ##########
 
 def main():
@@ -391,6 +430,7 @@ def main():
     maps_carve()
     keyboard_carve()
     safari_carve()
+    voicemail_carve()
 
 
 if __name__ == '__main__':

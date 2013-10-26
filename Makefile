@@ -5,6 +5,7 @@ all:
 
 test:
 	ls carvings/Safari
+	ls carvings/Voicemail
 
 run:
 	./carve.py
