@@ -362,6 +362,14 @@ def safari_carve():
                         f.write(entry['ScriptingName'] + '\n')
                         f.write(entry['SearchURLTemplate'] + '\n')
                         f.write('\n')
+            elif 'Suspend' in item:
+                saf_last_open = open('safari_last_open.txt', 'w')
+
+                cmd = 'plutil -p SuspendState.plist'
+                cmd_obj = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+                cmd_output = cmd_obj.communicate()[0]
+                saf_last_open.write(cmd_output)
+                saf_last_open.close()
 
     os.chdir(root_output_dir) 
 
