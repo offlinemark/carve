@@ -214,7 +214,7 @@ def mail_carve():
 def addbook_carve():
     """Asssumes it is currently in the output directory (carvings). Finds /Mail and performs analysis of messages and db."""
 
-	os.chdir('AddressBook')
+    os.chdir('AddressBook')
 
     # indexes
     id = 0
@@ -233,10 +233,6 @@ def addbook_carve():
             f.write('Last: ' + row[last] + '\n')
     os.chdir(root_output_dir)
 
-
-
-
-    
 def maps_carve():
     """Asssumes it is currently in the output directory (carvings). Finds /Maps and performs analysis of messages and db."""
 
@@ -258,7 +254,7 @@ def maps_carve():
 def cookie_carve():
     """Asssumes it is currently in the output directory (carvings). Finds /Mail and performs analysis of messages and db."""
 
-	os.chdir('Cookies')
+    os.chdir('Cookies')
     plist_contents = {}
 
     with open('cookies_summary.txt', 'w') as f:
