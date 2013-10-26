@@ -12,7 +12,7 @@ import plistlib as pl
 # configs
 root_dir = '/Users/mark/code/sec/forensics/ciphertech/iOS4_logical_acquisition/'
 root_output_dir = '/Users/mark/code/sec/forensics/ciphertech/carvings/'
-targets = ['AddressBook', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail']
+targets = ['AddressBook', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail', 'Keyboard']
 
 ### functions ##########
 
@@ -37,7 +37,7 @@ def dir_scrape():
                     os.chdir(root_dir)
                     continue
 
-                if d == 'Cookies':
+                if d == 'Cookies' or d == 'Keyboard':
                     output_dir = root_output_dir + d
                     try:
                         os.mkdir(output_dir)
@@ -293,6 +293,12 @@ def cookie_carve():
 
     os.chdir(root_output_dir)
 
+def keyboard_carve():
+    os.chdir('Keyboard')
+    for f in os.listdir('.'):
+        os.rename(f, 'keyboard_data.txt')
+    os.chdir(root_output_dir)
+
 ### main ##########
 
 def main():
@@ -309,6 +315,7 @@ def main():
     mail_carve()
     addbook_carve()
     maps_carve()
+    keyboard_carve()
 
 
 if __name__ == '__main__':

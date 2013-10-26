@@ -4,9 +4,7 @@ all:
 	make test
 
 test:
-	ls carvings/Maps
-	ls carvings/Cookies
-	cat carvings/Cookies/cookies_summary.txt
+	ls carvings/Keyboard
 
 run:
 	./carve.py
