@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import csv
+import datetime
 import os
 import shutil
 import sqlite3 as sql
@@ -53,13 +54,15 @@ def sms_carve():
     """Asssumes it is currently in the output directory (carvings). Finds /SMS and performs analysis of db."""
     os.chdir('SMS')
     sms_contents = []
+    ts = ''
+    destination = ''
 
     # indexes
     id = 0
     phone_number = 1
     date = 2
     text = 3
-
+    recipient = 15
 
     for file in os.listdir('.'):
         conn = sql.connect(file)
@@ -71,12 +74,19 @@ def sms_carve():
 
         with open(file.split('.')[0] + "_summary.txt", 'w') as f:
             for row in sms_contents:
-                print row
-                f.write('Message ' + str(row[id]) + '\n\n')
-                f.write('To: ' + str(row[phone_number]) + '\n')
-                f.write('Date: ' + str(row[date]) + '\n')
-                f.write('Contents: ' + str(row[text]) + '\n')
-                # f.write(line)
+                print row[recipient]
+
+                if row[phone_number] == None:
+                    destination = str(row[recipient])
+                    destination = destination[destination.find('<string>') + 8:destination.find('</string>')]
+                else:
+                    destination = row[phone_number]
+
+                ts = str(datetime.datetime.fromtimestamp(row[date]))
+                f.write('Message ' + str(row[id]) + ':\n\n')
+                f.write('To: ' + destination + '\n')
+                f.write('Date: ' + ts + '\n')
+                f.write('Contents: ' + str(row[text]) + '\n\n')
 
         conn.close()
 
