@@ -217,10 +217,28 @@ def cookie_carve():
     os.chdir('Cookies')
     plist_contents = {}
 
-    ind = 1
+    
 
     with open('cookies_summary.txt', 'w') as f:
+        ind = 1
         plist_contents = pl.readPlist('Cookies.plist')
+        for cookie in plist_contents:
+            created_ts = str(datetime.datetime.fromtimestamp(cookie['Created']))
+            f.write('Cookie ' + str(ind) + '\n\n')
+            f.write('Domain: ' + cookie['Domain'] + '\n')
+            f.write('Name: ' + cookie['Name'] + '\n')
+            f.write('Created: ' + created_ts + '\n')
+            f.write('Expires: ' + str(cookie['Expires']) + '\n')
+            try:
+                f.write('Value: ' + cookie['Value'] + '\n')
+            except:
+                pass
+            f.write('\n')
+            ind += 1
+
+    with open('itunes_stored_cookies_summary.txt', 'w') as f:
+        ind = 1
+        plist_contents = pl.readPlist('com.apple.itunesstored.plist')
         for cookie in plist_contents:
             created_ts = str(datetime.datetime.fromtimestamp(cookie['Created']))
             f.write('Cookie ' + str(ind) + '\n\n')
