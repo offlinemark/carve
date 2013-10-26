@@ -316,6 +316,63 @@ def keyboard_carve():
         os.rename(f, 'keyboard_data.txt')
     os.chdir(root_output_dir)
 
+def safari_carve():
+    os.chdir('Safari')
+
+    # indexes
+    id = 0
+    title = 4
+    url = 5
+
+    bookmark_contents = []
+
+    for item in os.listdir('.'):
+        if item.split('.')[1] == 'db':
+            conn = sql.connect(item)
+            c = conn.cursor()
+            try:
+                c.execute('SELECT * from bookmarks')
+            except:
+                continue
+            bookmark_contents = c.fetchall()
+
+            with open('safari_bookmarks_summary.txt', 'w') as f:
+                for row in bookmark_contents:
+                    f.write('Bookmark ' + str(row[id]) + '\n\n')
+                    f.write('Title: ' + row[title] + '\n')
+                    f.write('Url: ' + str(row[url]) + '\n')
+                    f.write('\n') 
+            conn.close()
+        else:
+            if 'Hist' in item:
+                saf_hist_summary = open('safari_history.txt', 'w')
+
+                cmd = 'plutil -p History.plist'
+                cmd_obj = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+                cmd_output = cmd_obj.communicate()[0]
+                saf_hist_summary.write(cmd_output)
+                saf_hist_summary.close()
+            elif 'Search' in item:
+                with open('safari_seach_engines.txt', 'w') as f:
+                    ind = 1
+                    plist_contents = pl.readPlist('SearchEngines.plist')
+                    # print plist_contents['SearchProviderList'][0]
+                    f.write('Search Engines: \n\n')
+                    for entry in plist_contents['SearchProviderList']:
+                        f.write(entry['ScriptingName'] + '\n')
+                        f.write(entry['SearchURLTemplate'] + '\n')
+                        f.write('\n')
+            elif 'Suspend' in item:
+                saf_last_open = open('safari_last_open.txt', 'w')
+
+                cmd = 'plutil -p SuspendState.plist'
+                cmd_obj = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+                cmd_output = cmd_obj.communicate()[0]
+                saf_last_open.write(cmd_output)
+                saf_last_open.close()
+
+    os.chdir(root_output_dir) 
+
 ### main ##########
 
 def main():
@@ -333,6 +390,7 @@ def main():
     addbook_carve()
     maps_carve()
     keyboard_carve()
+    safari_carve()
 
 
 if __name__ == '__main__':

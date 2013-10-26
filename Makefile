@@ -4,7 +4,7 @@ all:
 	make test
 
 test:
-	ls carvings
+	ls carvings/Safari
 
 run:
 	./carve.py
