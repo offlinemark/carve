@@ -5,6 +5,7 @@ all:
 
 test:
 	ls carvings/Cookies
+	cat carvings/Cookies/cookies_summary.txt
 
 run:
 	./carve.py
