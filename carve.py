@@ -26,6 +26,7 @@ def dir_scrape():
         # if (root in targets) or (root in dirs)
         for d in dirs:
             if d in targets:
+
                 # print d
                 # print dirs
                 # print root
@@ -39,7 +40,7 @@ def dir_scrape():
                 # print os.listdir(root + "/" + d)
                 # print os.listdir(root + "/" + d)
                 for f in os.listdir(root + "/" + d):
-                    cmd = "file %s" % (root + "/" + d + "/" + f)
+                    cmd = "file '%s'" % (root + "/" + d + "/" + f)
                     # print cmd
                     cmd_obj = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
                     cmd_output = cmd_obj.communicate()[0]
