@@ -215,12 +215,29 @@ def addbook_carve():
     c.execute('SELECT * from ABPerson')
 
     addbook_contents = c.fetchall()
-    print addbook_contents
     with open('addressbook_summary.txt', 'w') as f:
         for row in addbook_contents:
             f.write('Person ' + str(row[id]) + ':\n\n')
             f.write('First: ' + row[first] + '\n')
             f.write('Last: ' + row[last] + '\n')
+    os.chdir(root_output_dir)
+
+def maps_carve():
+    """Asssumes it is currently in the output directory (carvings). Finds /Maps and performs analysis of messages and db."""
+
+    os.chdir('Maps')
+
+    maps_summary = open('maps_history_geolocation.txt', 'w')
+
+    cmd = 'plutil -p History.plist'
+    cmd_obj = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    cmd_output = cmd_obj.communicate()[0]
+    cmd_output = cmd_output[cmd_output.find("1 => {")+7:]
+    cmd_output = cmd_output[:cmd_output.find("}")]
+    maps_summary.write(cmd_output)
+
+
+    maps_summary.close()
     os.chdir(root_output_dir)
 
 ### main ##########
@@ -237,6 +254,7 @@ def main():
     cal_carve()
     mail_carve()
     addbook_carve()
+    maps_carve()
 
 if __name__ == '__main__':
     main()

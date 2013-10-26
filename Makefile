@@ -4,8 +4,7 @@ all:
 	make test
 
 test:
-	ls carvings/AddressBook
-	cat carvings/AddressBook/addressbook_summary.txt
+	ls carvings/Maps
 
 run:
 	./carve.py
