@@ -8,11 +8,12 @@ import sqlite3 as sql
 import subprocess
 import sys
 
+# configs
 root_dir = '/Users/mark/code/sec/forensics/ciphertech/iOS4_logical_acquisition/'
 root_output_dir = '/Users/mark/code/sec/forensics/ciphertech/carvings/'
-targets = ['Library', 'Address Book', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail']
-# targets = ['./mobile/Library/AddressBook', './mobile/Library/Calendar']
-# targets = ['AddressBook', 'Calendar', 'Notes', 'Safari', 'SMS', 'Cookies']
+targets = ['Address Book', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail']
+
+### functions ##########
 
 def die(msg=''):
     sys.exit(msg)
@@ -52,6 +53,7 @@ def dir_scrape():
 
 def sms_carve():
     """Asssumes it is currently in the output directory (carvings). Finds /SMS and performs analysis of db."""
+
     os.chdir('SMS')
     sms_contents = []
     ts = ''
@@ -89,9 +91,6 @@ def sms_carve():
                 f.write('Contents: ' + str(row[text]) + '\n\n')
 
         conn.close()
-
-
-
 
     os.chdir(root_output_dir)
 
