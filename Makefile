@@ -4,8 +4,8 @@ all:
 	make test
 
 test:
-	find carvings/SMS
-	cat carvings/Calendar/Calendar_summary.txt
+	ls carvings/Mail
+	cat carvings/Mail/mail_summary.txt
 
 run:
 	./carve.py

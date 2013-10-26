@@ -26,6 +26,16 @@ def dir_scrape():
         # if (root in targets) or (root in dirs)
         for d in dirs:
             if d in targets:
+
+                # the Mail directory setup is weird, so special case
+                if d == 'Mail':
+                    output_dir = root_output_dir + d
+                    os.mkdir(output_dir)
+                    os.chdir(root + '/Mail')
+                    mail_pre_carve(output_dir)
+                    os.chdir(root_dir)
+                    continue
+
                 # print d
                 # print dirs
                 # print root
@@ -39,7 +49,7 @@ def dir_scrape():
                 # print os.listdir(root + "/" + d)
                 # print os.listdir(root + "/" + d)
                 for f in os.listdir(root + "/" + d):
-                    cmd = "file %s" % (root + "/" + d + "/" + f)
+                    cmd = "file '%s'" % (root + "/" + d + "/" + f)
                     # print cmd
                     cmd_obj = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
                     cmd_output = cmd_obj.communicate()[0]
@@ -50,6 +60,21 @@ def dir_scrape():
                         # print root + "/" + d + "/" + f + "   =>  " + output_dir
                         # print
                         # print
+
+def mail_pre_carve(output_dir):
+    # how fucking scary does this look
+    # not actually that bad ;)
+
+    for item in os.listdir('.'):
+        if 'Protected' in item:
+            shutil.copy(item, output_dir)
+            continue
+        if item[0:4] == 'IMAP':
+            for root, dirs, files in os.walk(item):
+                if 'Messages' in root:
+                    for f in files:
+                        shutil.copy(root + '/' + f, output_dir)
+    pass
 
 def cal_carve():
     """Asssumes it is currently in the output directory (carvings). Finds /Calendar and performs analysis of db."""
@@ -133,6 +158,50 @@ def sms_carve():
 
     os.chdir(root_output_dir)
 
+def mail_carve():
+    """Asssumes it is currently in the output directory (carvings). Finds /Mail and performs analysis of messages and db."""
+
+    os.chdir('Mail')
+    os.mkdir('Messages')
+
+    # indexes
+    sender = 1
+    email = 3
+
+    mail_summary = open('mail_summary.txt', 'w')
+    mail_contents = ''
+    recent_correspondents = []
+
+    for file in os.listdir('.'):
+        try:
+            if file.split('.')[2] == 'emlxpart':
+                shutil.move(file, 'Messages')
+        except:
+            pass # for the files without extensions
+
+        if 'Protected' in file:
+            conn = sql.connect(file)
+            c = conn.cursor()
+            c.execute('SELECT * from messages')
+            mail_contents = c.fetchall()
+            email_addr = mail_contents[0][email]
+            mail_summary.write('Email Address: ' + email_addr + '\n\n')
+            for row in mail_contents:
+                if row[sender] in recent_correspondents:
+                    continue
+                else:
+                    recent_correspondents.append(row[sender])
+            mail_summary.write('Recent Correspondents:\n')
+            for r in recent_correspondents:
+                mail_summary.write(r + '\n')
+
+            conn.close()
+
+    mail_summary.close()
+    os.chdir(root_output_dir)
+
+
+
 ### main ##########
 
 def main():
@@ -145,6 +214,7 @@ def main():
 
     sms_carve()
     cal_carve()
+    mail_carve()
 
 if __name__ == '__main__':
     main()
