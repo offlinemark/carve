@@ -4,7 +4,7 @@ all:
 	make test
 
 test:
-	ls carvings/Keyboard
+	ls carvings
 
 run:
 	./carve.py

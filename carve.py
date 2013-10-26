@@ -12,7 +12,7 @@ import plistlib as pl
 # configs
 root_dir = '/Users/mark/code/sec/forensics/ciphertech/iOS4_logical_acquisition/'
 root_output_dir = '/Users/mark/code/sec/forensics/ciphertech/carvings/'
-targets = ['AddressBook', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail', 'Keyboard']
+targets = ['AddressBook', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail', 'Keyboard', 'Logs']
 
 ### functions ##########
 
@@ -47,6 +47,17 @@ def dir_scrape():
                         shutil.copy(root + '/' + d + '/' + f, output_dir)
                     continue
 
+                if d == 'Logs':
+                    output_dir = root_output_dir + d
+                    try:
+                        os.mkdir(output_dir)
+                    except:
+                        pass
+                    os.chdir(root + '/Logs')
+                    log_pre_carve(output_dir)
+                    os.chdir(root_dir)
+                    continue
+
                 # print d
                 # print dirs
                 # print root
@@ -71,6 +82,12 @@ def dir_scrape():
                         # print root + "/" + d + "/" + f + "   =>  " + output_dir
                         # print
                         # print
+
+def log_pre_carve(output_dir):
+    for root, dirs, files in os.walk('.'):
+        if 'general.log' in files:
+            shutil.copy(root + '/general.log', output_dir)
+            break
 
 def mail_pre_carve(output_dir):
     # how fucking scary does this look
