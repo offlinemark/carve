@@ -11,7 +11,7 @@ import sys
 # configs
 root_dir = '/Users/mark/code/sec/forensics/ciphertech/iOS4_logical_acquisition/'
 root_output_dir = '/Users/mark/code/sec/forensics/ciphertech/carvings/'
-targets = ['Address Book', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail']
+targets = ['AddressBook', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail']
 
 ### functions ##########
 
@@ -200,7 +200,28 @@ def mail_carve():
     mail_summary.close()
     os.chdir(root_output_dir)
 
+def addbook_carve():
+    """Asssumes it is currently in the output directory (carvings). Finds /Mail and performs analysis of messages and db."""
 
+    os.chdir('AddressBook')
+
+    # indexes
+    id = 0
+    first = 1
+    last = 2
+
+    conn = sql.connect('AddressBook.sqlitedb')
+    c = conn.cursor()
+    c.execute('SELECT * from ABPerson')
+
+    addbook_contents = c.fetchall()
+    print addbook_contents
+    with open('addressbook_summary.txt', 'w') as f:
+        for row in addbook_contents:
+            f.write('Person ' + str(row[id]) + ':\n\n')
+            f.write('First: ' + row[first] + '\n')
+            f.write('Last: ' + row[last] + '\n')
+    os.chdir(root_output_dir)
 
 ### main ##########
 
@@ -215,6 +236,7 @@ def main():
     sms_carve()
     cal_carve()
     mail_carve()
+    addbook_carve()
 
 if __name__ == '__main__':
     main()
