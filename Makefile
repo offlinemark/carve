@@ -4,8 +4,7 @@ all:
 	make test
 
 test:
-	ls carvings/Safari
-	ls carvings/Voicemail
+	cat carvings/SystemConfiguration/wifi_cell_networks.txt
 
 run:
 	./carve.py
