@@ -1,7 +1,7 @@
 all:
 	make clean
 	make run
-	make test
+#	make test
 
 test:
 	ls carvings/Safari

@@ -12,7 +12,7 @@ import plistlib as pl
 # configs
 root_dir = '/Users/mark/code/sec/forensics/ciphertech/iOS4_logical_acquisition/'
 root_output_dir = '/Users/mark/code/sec/forensics/ciphertech/carvings/'
-targets = ['AddressBook', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail', 'Keyboard', 'Logs']
+targets = ['AddressBook', 'Calendar', 'Cookies', 'Mail', 'Maps', 'Safari', 'SMS', 'Voicemail', 'Keyboard', 'Logs', 'SystemConfiguration']
 
 ### functions ##########
 
@@ -136,7 +136,7 @@ def cal_carve():
                 f.write('Event ' + str(row[id]) + ':\n\n')
                 f.write('Summary: ' + row[summary] + '\n')
                 f.write('Description: ' + str(row[description]) + '\n')
-                f.write('Location: ' + row[loc] + '\n')
+                f.write('Location: ' + row[location] + '\n')
                 f.write('Start: ' + start_ts + '\n')
                 f.write('End: ' + end_ts + '\n')
 
@@ -412,6 +412,33 @@ def voicemail_carve():
 
     os.chdir(root_output_dir)
 
+def wificell_carve():
+    os.chdir('SystemConfiguration')
+
+    for item in os.listdir('.'):
+        if 'wifi' in item:
+            with open('wifi_networks.txt', 'w') as f:
+                ind = 1
+                plist_contents = pl.readPlist('com.apple.wifi.plist')
+                f.write('Wifi Networks:\n\n')
+                for a in plist_contents['List of known networks']:
+                    print a
+                f.write('SSID: ' + plist_contents['List of known networks'][0]['SSID_STR'] + '\n\n')
+                f.write('BSSID: ' + plist_contents['List of known networks'][0]['BSSID'] + '\n\n')
+
+                f.write('\n')
+                ind += 1
+        elif 'identif' in item:
+            with open('wifi_APs.txt', 'w') as f:
+                ind = 1
+                plist_contents = pl.readPlist('com.apple.network.identification.plist')
+                f.write('Addr: ' + plist_contents['Signatures'][0]['Services'][1]['IPv4']['Router']+ '\n\n')
+
+                f.write('\n')
+                ind += 1
+
+    os.chdir(root_output_dir)
+
 ### main ##########
 
 def main():
@@ -431,6 +458,7 @@ def main():
     keyboard_carve()
     safari_carve()
     voicemail_carve()
+    wificell_carve()
 
 
 if __name__ == '__main__':
