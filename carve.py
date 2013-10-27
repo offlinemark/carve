@@ -8,6 +8,7 @@ import sqlite3 as sql
 import subprocess
 import sys
 import plistlib as pl
+import pdb
 
 # configs
 root_dir = '/Users/mark/code/sec/forensics/ciphertech/iOS4_logical_acquisition/'
@@ -415,25 +416,32 @@ def voicemail_carve():
 def wificell_carve():
     os.chdir('SystemConfiguration')
 
-    for item in os.listdir('.'):
-        if 'wifi' in item:
-            with open('wifi_networks.txt', 'w') as f:
-                ind = 1
-                plist_contents = pl.readPlist('com.apple.wifi.plist')
-                f.write('Wifi Networks:\n\n')
-                for a in plist_contents['List of known networks']:
-                    print a
-                f.write('SSID: ' + plist_contents['List of known networks'][0]['SSID_STR'] + '\n\n')
-                f.write('BSSID: ' + plist_contents['List of known networks'][0]['BSSID'] + '\n\n')
+    plist_contents = {}
 
+    for item in os.listdir('.'):
+        print item
+        if 'identif' in item: # gets executed first, then 'wifi'
+            with open('wifi_cell_networks.txt', 'wa') as f:
+                f.write('Networks: \n\n')
+                ind = 1
+                plist_contents = pl.readPlist(item)
+                for p in plist_contents['Signatures']:
+                    f.write('ID: ' + p['Identifier'] + '\n')
+                    for p2 in p['Services']:
+                        f.write('Addr: ' + p2['IPv4']['Router']+ '\n')
+                    f.write('\n')
                 f.write('\n')
                 ind += 1
-        elif 'identif' in item:
-            with open('wifi_APs.txt', 'w') as f:
+        if 'wifi' in item:
+            with open('wifi_cell_networks.txt', 'a') as f:
                 ind = 1
-                plist_contents = pl.readPlist('com.apple.network.identification.plist')
-                f.write('Addr: ' + plist_contents['Signatures'][0]['Services'][1]['IPv4']['Router']+ '\n\n')
-
+                plist_contents = pl.readPlist(item)
+                f.write('Wifi Networks:\n\n')
+                f.write('SSID: ' + plist_contents['List of known networks'][0]['SSID_STR'] + '\n')
+                f.write('BSSID: ' + plist_contents['List of known networks'][0]['BSSID'] + '\n')
+                f.write('Secure?: ' + str(plist_contents['List of known networks'][0]['WiFiNetworkIsSecure']) + '\n')
+                f.write('Password?: ' + str(plist_contents['List of known networks'][0]['WiFiNetworkRequiresPassword']) + '\n')
+                f.write('Channel: ' + str(plist_contents['List of known networks'][0]['CHANNEL']) + '\n')
                 f.write('\n')
                 ind += 1
 
