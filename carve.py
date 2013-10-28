@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import csv
 import datetime
 import os
 import shutil
@@ -25,7 +24,6 @@ def dir_scrape():
 
     for root, dirs, files in os.walk('.'):
         # print dirs
-        # if (root in targets) or (root in dirs)
         for d in dirs:
             if d in targets:
 
@@ -59,41 +57,27 @@ def dir_scrape():
                     os.chdir(root_dir)
                     continue
 
-                # print d
-                # print dirs
-                # print root
-                # print files
                 output_dir = root_output_dir + d
                 try:
                     os.mkdir(output_dir)
                 except OSError:
                     continue
-                # os.chdir(root)
-                # print os.listdir(root + "/" + d)
-                # print os.listdir(root + "/" + d)
                 for f in os.listdir(root + "/" + d):
                     cmd = "file '%s'" % (root + "/" + d + "/" + f)
-                    # print cmd
                     cmd_obj = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
                     cmd_output = cmd_obj.communicate()[0]
-                    # print cmd_output
                     if ('SQLite' in cmd_output) or ('Apple binary' in cmd_output) or ('XML' in cmd_output) or ('Adapt' in cmd_output):
-                        # print cmd_output
                         shutil.copy(root + "/" + d + "/" + f, output_dir) 
-                        # print root + "/" + d + "/" + f + "   =>  " + output_dir
-                        # print
-                        # print
 
 def log_pre_carve(output_dir):
+    """Special case for carving Log, because of unique directory structure."""
     for root, dirs, files in os.walk('.'):
         if 'general.log' in files:
             shutil.copy(root + '/general.log', output_dir)
             break
 
 def mail_pre_carve(output_dir):
-    # how fucking scary does this look
-    # not actually that bad ;)
-
+    """Special case for carving Mail, because of unique directory structure."""
     for item in os.listdir('.'):
         if 'Protected' in item:
             shutil.copy(item, output_dir)
@@ -230,7 +214,7 @@ def mail_carve():
     os.chdir(root_output_dir)
 
 def addbook_carve():
-    """Asssumes it is currently in the output directory (carvings). Finds /Mail and performs analysis of messages and db."""
+    """Asssumes it is currently in the output directory (carvings). Finds /AddressBook and performs analysis of messages and db."""
 
     os.chdir('AddressBook')
 
@@ -270,7 +254,7 @@ def maps_carve():
     os.chdir(root_output_dir)
 
 def cookie_carve():
-    """Asssumes it is currently in the output directory (carvings). Finds /Mail and performs analysis of messages and db."""
+    """Asssumes it is currently in the output directory (carvings). Finds /Cookies and performs analysis of messages and db."""
 
     os.chdir('Cookies')
     plist_contents = {}
@@ -453,10 +437,13 @@ def main():
     os.chdir(root_dir)
     os.mkdir(root_output_dir)
 
+    # Part 1: Scrape image and copy all databases of interest into directories in /carvings
     dir_scrape();
 
     os.chdir(root_output_dir)
 
+    # Part 2: Using a modular approach, a function can be written for each directory
+    # that extracts the information based on the type of databases available
     cookie_carve()
     sms_carve()
     cal_carve()
@@ -467,7 +454,6 @@ def main():
     safari_carve()
     voicemail_carve()
     wificell_carve()
-
 
 if __name__ == '__main__':
     main()
